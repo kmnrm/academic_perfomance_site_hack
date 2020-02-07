@@ -13,28 +13,21 @@ def get_schoolkid(kid):
 
 def fix_marks(kid):
     schoolkid = get_schoolkid(kid)
-    try:
+    if schoolkid:
         marks = Mark.objects.filter(schoolkid=schoolkid, points__lt=4)
         marks.update(points=5)
-    except AttributeError:
-        pass
 
 
 def remove_chastisements(kid):
     schoollkid = get_schoolkid(kid)
-    try:
+    if schoolkid:
         chastisements = Chastisement.objects.filter(schoolkid=schoollkid)
         chastisements.delete()
-    except AttributeError:
-        pass
 
 
 def create_commendation(kid, subject, text='Молодец!'):
     schoolkid = get_schoolkid(kid)
-    try:
+    if schoolkid:
         lessons = Lesson.objects.filter(year_of_study=schoolkid.year_of_study, group_letter=schoolkid.group_letter, subject__title=subject)
-        lessons = lessons.order_by('date').reverse()
-        lesson = lessons[:1].get()
+        lesson = lessons.order_by('-date').first()
         Commendation.objects.create(text=text, created=lesson.date, schoolkid=schoolkid, subject=lesson.subject, teacher=lesson.teacher)
-    except AttributeError:
-        pass
